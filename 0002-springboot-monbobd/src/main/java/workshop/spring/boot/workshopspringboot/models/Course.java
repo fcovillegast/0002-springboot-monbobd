@@ -2,9 +2,12 @@ package workshop.spring.boot.workshopspringboot.models;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.data.annotation.Id;
+
 
 public class Course {
 
+	@Id
 	private int id;
 	
 	@NotNull

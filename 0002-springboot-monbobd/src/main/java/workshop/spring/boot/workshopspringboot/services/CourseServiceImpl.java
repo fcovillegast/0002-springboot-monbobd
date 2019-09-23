@@ -33,6 +33,15 @@ public class CourseServiceImpl implements CourseService {
 
 		return courseSaved.block();
 	}
+	
+	@Override
+	public Mono<Course> monoFindBy(Integer idCourse) {
+		Mono<Course> courseSaved = courseRepository.findById(idCourse);
+
+		checkExistCourse(idCourse, courseSaved);
+
+		return courseSaved;
+	}
 
 	@Override
 	public Course create(Course course) {

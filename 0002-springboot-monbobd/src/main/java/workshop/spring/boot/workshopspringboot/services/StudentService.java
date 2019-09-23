@@ -14,9 +14,11 @@ public interface StudentService {
 
 	public Mono<Student> create(Student course);
 
-	public Mono<Student> update(Integer id, Student student);
+	public Student update(Integer id, Student student);
 
 	Mono<Void> delete(Integer id);
+
+	public Mono<Void> deleteM2(Integer id);
 	
 	public Flux<Student> findByCourse(Integer idCourse);
 	

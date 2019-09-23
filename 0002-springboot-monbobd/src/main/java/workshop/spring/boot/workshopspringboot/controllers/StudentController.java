@@ -55,7 +55,7 @@ public class StudentController {
 	@DeleteMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<Student> delete(@PathVariable(value="id") Integer id) {
-		studentService.delete(id);;
+		studentService.deleteM2(id);
 		
 		return new ResponseEntity<>(null, HttpStatus.CREATED);
 		
@@ -64,9 +64,9 @@ public class StudentController {
 	@PutMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<Student> update(@PathVariable(value="id") Integer id, @Valid @RequestBody Student student) {
-		studentService.update(id, student);
+		Student studentSaved = studentService.update(id, student);
 		
-		return new ResponseEntity<>(null, HttpStatus.CREATED);
+		return new ResponseEntity<Student>(studentSaved, HttpStatus.CREATED);
 	}
 	
 	@RequestMapping("/inCourse/{id_course}")

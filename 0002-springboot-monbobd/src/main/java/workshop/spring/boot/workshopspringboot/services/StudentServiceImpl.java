@@ -1,6 +1,6 @@
 package workshop.spring.boot.workshopspringboot.services;
 
-import java.util.List;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,33 +37,47 @@ public class StudentServiceImpl implements StudentService {
 		return studentSaved;
 	}
 
-	public Mono<Student> create(Student course) {
-		Mono<Student> mono = studentRepository.save(course);
+	public Mono<Student> create(Student student) {
+		Mono<Student> mono = studentRepository.save(student);
 		return mono;
 	}
 
-	public Mono<Student> update(Integer id, Student student) {
+	public Student update(Integer id, Student student) {
 
 		Mono<Student> studentMono = this.findBy(id);
 
-		Student studentSaved = studentMono.block();
+		Student studentFinded = studentMono.block();
+		studentFinded.setRut(student.getRut());
+		studentFinded.setName(student.getName());
+		studentFinded.setCourse(student.getCourse());
 		
-		studentSaved.setRut(student.getRut());
-		studentSaved.setName(student.getName());
-
-		Mono<Student> mono = studentRepository.save(studentSaved);
-		return mono;
+ 		Mono<Student> studentSaved = studentRepository.save(studentFinded);
+ 
+		
+		return studentSaved.block();
+	 
 	}
 
 	public Mono<Void> delete(Integer id) {
-		//Mono<Student> studentSaved = this.findBy(id);
-
+		Mono<Student> studentSaved = this.findBy(id);
+		
 		Mono<Void> monoVoid = studentRepository.deleteById(id);
+		monoVoid.subscribe(); 
+		
+		return monoVoid;
+	}
+	
+	public Mono<Void> deleteM2(Integer id) {
+		Mono<Student> studentSaved = this.findBy(id);
+		
+		Mono<Void> monoVoid = studentRepository.delete(studentSaved.block());
+		monoVoid.subscribe(); 
+		
 		return monoVoid;
 	}
 
 	private void checkExistStudent(Integer id, Mono<Student> studentSaved) {
-		if (studentSaved == null) {
+		if (studentSaved == null || studentSaved.block() == null) {
 			throw new CourseNotFoundException("Doesnt not exist the Student with id:" + id);
 		}
 	}
@@ -71,9 +85,9 @@ public class StudentServiceImpl implements StudentService {
 	@Override
 	public Flux<Student> findByCourse(Integer idCourse) {
 		
-		Course course = courseService.findBy(idCourse);
+		Mono<Course> course = courseService.monoFindBy(idCourse);
 		
-		Flux<Student> students = studentRepository.findAllByCourse(course);
+		Flux<Student> students = studentRepository.findAllByCourse(course.block());
 		
 		return students;
 	}
@@ -81,18 +95,15 @@ public class StudentServiceImpl implements StudentService {
 	@Override
 	public Mono<Student> addCourse(Integer idCourse, Integer idStudent) {
 		
+		Mono<Student> studenSaved = findBy(idStudent);
+		Student student = studenSaved.block();
+		
 		Course courseSaved = courseService.findBy(idCourse);
-		Mono<Student> studentSaved = findBy(idStudent);
+		student.setName(student.getName()+" ¬¬");
+		student.setCourse(courseSaved);
 		
-		studentSaved.doOnSuccess(findPlayer -> {
-			findPlayer.setCourse(courseSaved);
-			studentRepository.save(findPlayer).subscribe();
-		});
+		update(idStudent, student);
 		
-//		studentSaved.setCourse(courseSaved);
-//		
-//		Mono<Student> mono = studentRepository.save(studentSaved);
-		
-		return studentSaved;
+		return findBy(idStudent);
 	}
 }

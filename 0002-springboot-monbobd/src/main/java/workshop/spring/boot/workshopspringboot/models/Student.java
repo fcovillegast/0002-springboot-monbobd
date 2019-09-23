@@ -1,12 +1,15 @@
 package workshop.spring.boot.workshopspringboot.models;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 import org.springframework.data.annotation.Id;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
+import workshop.spring.boot.workshopspringboot.validations.ValidRut;
 
  
 public class Student {
@@ -14,13 +17,13 @@ public class Student {
 	@Id
 	private int id;
 
-	@Pattern(regexp = "^(\\d{1,3}(?:\\.\\d{1,3}){2}-[\\dkK])$")
+	@ValidRut
 	private String rut;
 
 	@NotNull
 	private String name;
-
-	@JsonProperty(access = Access.WRITE_ONLY)
+ 
+	//@JsonProperty(access = Access.WRITE_ONLY)
 	private Course course;
 
 	public int getId() {
@@ -54,5 +57,23 @@ public class Student {
 	public void setCourse(Course course) {
 		this.course = course;
 	}
+
+	 
+ 
+ 	
+//	@Override
+//	public String toString() {
+//		Integer size = null;
+//		if(this.getCourse() != null) {
+//			size = this.getCourse().size();
+//		}
+//		
+//		return new StringBuilder().append("id:").append(this.id).append(",")
+//							.append("rut:").append(this.rut).append(",")
+//							.append("name:").append(this.name).append(",")
+//							.append("size:").append(size).toString();
+//	}
+	
+	 
 
 }
